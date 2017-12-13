@@ -16,7 +16,7 @@ environment:
   task: 
     type: task/leo_balancing
     timeout: 20
-    randomize: 1
+    randomize: 5
     measurement_noise: 0
     rwForward: 0
     knee_mode: environment/model/knee_mode

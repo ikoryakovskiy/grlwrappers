@@ -4,9 +4,10 @@ from gym.spaces import Box
 
 class GRLEnv(gym.Env):
 
-    def __init__(self, config_file, test = 0):
+    def __init__(self, config_file, test=0):
         self.env = PyEnv()
         od, o_min, o_max, ad, a_min, a_max = self.env.init(config_file)
+                        
         self.observation_space = Box(o_min, o_max)
         self.action_space = Box(a_min, a_max)
         self.test = test
@@ -15,11 +16,12 @@ class GRLEnv(gym.Env):
         """ Starting the environment """
         if not seed:
             seed = 0
-        return self.env.seed(seed)
+        self.env.seed(seed)
     
     def _reset(self):
         """ Starting the environment """
-        return self.env.start(self.test)
+        obs = self.env.start(self.test)
+        return obs
 
     def _step(self, action):
         """ Next observation """
@@ -28,3 +30,4 @@ class GRLEnv(gym.Env):
         
     def _close(self):
         self.env.fini()
+        

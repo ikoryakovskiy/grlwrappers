@@ -9,18 +9,17 @@ import numpy as np
 from grlgym.envs.grl import GRLEnv
 
 def main():
-
+  
   # Learning environment
-  env = GRLEnv("rbdl_py_balancing.yaml", test = 0)
+  env = GRLEnv("rbdl_py_balancing.yaml", test=0)
   env.seed(1)
-  env.reset()
-  a = np.zeros(env.action_space.shape) #+ np.array([0, 0] + [0.1]*7)
+  a = np.zeros(env.action_space.shape) #+ 0.1
   s_fin = run(env, a)
   
   # Testing environment
-  eval_env = GRLEnv("rbdl_py_balancing.yaml", test = 1)
+  eval_env = GRLEnv("rbdl_py_balancing.yaml", test=1)
   s_eval_fin = run(eval_env, a)
-  
+    
   # Seeds are different, so result should be different
   assert((s_fin != s_eval_fin).any())
 
@@ -33,11 +32,17 @@ def main():
   
   env.close()
   eval_env.close()
-
+  
+  # Testing full environemt
+  env = GRLEnv("rbdl_py_balancing_full.yaml", test=1)
+  a = np.zeros(env.action_space.shape)
+  run(env, a)
 
 def run(e, a):
   s = e.reset()
-  print('%s' % [x for x in s])
+  s, rw, tt, tau = e.step(a)
+  print('%s' % ['%5.5f' % val for val in s])
+  
   for i in range(1000):
     s, rw, tt, tau = e.step(a)
     print('env:')

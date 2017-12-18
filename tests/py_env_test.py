@@ -6,6 +6,7 @@ Created on Mon Dec 11 16:20:33 2017
 @author: Ivan Koryakovskiy <i.koryakovskiy@gmail.com>
 """
 import numpy as np
+import random
 from grlgym.envs.grl import GRLEnv
 
 def main():
@@ -37,6 +38,12 @@ def main():
   env = GRLEnv("rbdl_py_balancing_full.yaml", test=1)
   a = np.zeros(env.action_space.shape)
   run(env, a)
+  
+  # Test environment for many times to catch memory allocation problems if any
+  env = GRLEnv("rbdl_py_balancing.yaml", test=1)
+  for i in range(1000):
+    a = [random.random() for _ in range(env.action_space.shape[0])]
+    run(env, a)
 
 def run(e, a):
   s = e.reset()

@@ -1,14 +1,13 @@
 import gym
 from py_env import PyEnv
 from gym.spaces import Box
+import numpy as np
 
 class GRLEnv(gym.Env):
 
     def __init__(self, config_file):
         self.env = PyEnv()
-        #self.spec.env_id = config_file
         od, o_min, o_max, ad, a_min, a_max = self.env.init(config_file)
-                        
         self.observation_space = Box(o_min, o_max)
         self.action_space = Box(a_min, a_max)
         self.test = False
@@ -26,15 +25,21 @@ class GRLEnv(gym.Env):
 
     def _step(self, action):
         """ Next observation """
-        obs, reward, terminal, info = self.env.step(action)
-        #info = [float(x) for x in str_info.split()[:-1]]
+        # sometimes provided action is float32, but only float64 is accepted
+        obs, reward, terminal, info = self.env.step(action.astype(np.float64))
         return obs, reward, terminal, info
         
     def _close(self):
         self.env.fini()
         
-    # own
-    def set_role(self, test=False):
+    # Own methods
+    def set_test(self, test=False):
+        """ Use before reset() to select type of environment: learning or testing """
         self.test = test
+        
+    def report(self, report='test'):
+        """ Select in which episodes report (info) is requested """
+        idx = ['learn', 'test', 'all'].index(report)
+        self.env.report(idx)
         
        

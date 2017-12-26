@@ -7,7 +7,8 @@ class GRLEnv(gym.Env):
 
     def __init__(self, config_file):
         self.env = PyEnv()
-        od, o_min, o_max, ad, a_min, a_max = self.env.init(config_file)
+        o_dims, o_min, o_max, ad, a_min, a_max = self.env.init(config_file)
+        self.o_dims = o_dims
         self.observation_space = Box(o_min, o_max)
         self.action_space = Box(a_min, a_max)
         self.test = False
@@ -45,3 +46,15 @@ class GRLEnv(gym.Env):
     def reconfigure(self, d=None):
         """ Reconfigure the environemnt using the dict """
         self.env.reconfigure(d)
+
+class Leo(GRLEnv):
+
+    def __init__(self, config_file):
+        """ Last observation element tells what the forward promotion is """
+        self.env = PyEnv()
+        o_dims, o_min, o_max, ad, a_min, a_max = self.env.init(config_file)
+        self.o_dims = o_dims-1
+        self.observation_space = Box(o_min[:-1], o_max[:-1])
+        self.action_space = Box(a_min, a_max)
+        self.test = False
+

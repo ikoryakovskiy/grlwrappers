@@ -11,7 +11,6 @@ class GRLEnv(gym.Env):
         self.o_dims = o_dims
         self.observation_space = Box(o_min, o_max)
         self.action_space = Box(a_min, a_max)
-        self.test = False
 
     def _seed(self, seed):
         """ Starting the environment """
@@ -19,25 +18,21 @@ class GRLEnv(gym.Env):
             seed = 0
         self.env.seed(seed)
 
-    def _reset(self):
+    def _reset(self, test=False, **kwargs):
         """ Starting the environment """
-        obs = self.env.start(int(self.test))
+        obs = self.env.start(int(test))
         return obs
 
     def _step(self, action):
         """ Next observation """
         # sometimes provided action is float32, but only float64 is accepted
         obs, reward, terminal, info = self.env.step(action.astype(np.float64))
-        return obs, reward, terminal, info
+        return obs, reward, terminal == 2, info
 
     def _close(self):
         self.env.fini()
 
     # Own methods
-    def set_test(self, test=False):
-        """ Use before reset() to select type of environment: learning or testing """
-        self.test = test
-
     def report(self, report='test'):
         """ Select in which episodes report (info) is requested """
         idx = ['learn', 'test', 'all'].index(report)
@@ -56,5 +51,4 @@ class Leo(GRLEnv):
         self.o_dims = o_dims-1
         self.observation_space = Box(o_min[:-1], o_max[:-1])
         self.action_space = Box(a_min, a_max)
-        self.test = False
 

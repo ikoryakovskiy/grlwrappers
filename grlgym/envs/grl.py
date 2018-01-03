@@ -27,7 +27,7 @@ class GRLEnv(gym.Env):
         """ Next observation """
         # sometimes provided action is float32, but only float64 is accepted
         obs, reward, terminal, info = self.env.step(action.astype(np.float64))
-        return obs, reward, terminal == 2, info
+        return obs, reward, terminal, info
 
     def _close(self):
         self.env.fini()
